@@ -1,8 +1,47 @@
-{    
+{
     "[production]": {
         "requires": {
             "db": {
                 "kind": "hana"
+            },
+            "auth": {
+                "kind": "xsuaa"
+            }
+        }
+    },
+    "[hybrid]": {
+        "requires": {
+            "db": {
+                "kind": "hana"
+            },
+            "auth": {
+                "kind": "basic-auth",
+                "users": {
+                    "admin": {
+                        "password": "admin"
+                    },
+                    "viewer": {
+                        "password": "viewer"
+                    }
+                }
+            }
+        }
+    },
+    "[development]": {
+        "requires": {
+            "db": {
+                "kind": "hana"
+            },
+            "auth": {
+                "kind": "basic-auth",
+                "users": {
+                    "admin": {
+                        "password": "admin"
+                    },
+                    "viewer": {
+                        "password": "viewer"
+                    }
+                }
             }
         }
     }
