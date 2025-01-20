@@ -1,0 +1,9 @@
+{    
+    "[production]": {
+        "requires": {
+            "db": {
+                "kind": "hana"
+            }
+        }
+    }
+}

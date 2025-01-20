@@ -8,7 +8,7 @@ build-parameters:
   before-all:
     - builder: custom
       commands:
-        - npm ci
+        - npm install
         - npx cds build --production
 modules:
   - name: bootcampcapnumen2025-srv
@@ -26,6 +26,7 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: bootcampcapnumen2025-db
+      - name: bootcampcapnumen2025-auth
 
   - name: bootcampcapnumen2025-db-deployer
     type: hdb
@@ -41,3 +42,12 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
+  - name: bootcampcapnumen2025-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: bootcampcapnumen2025-${org}-${space}
+        tenant-mode: dedicated

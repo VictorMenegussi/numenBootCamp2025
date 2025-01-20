@@ -7,6 +7,8 @@
   "private": true,
   "dependencies": {
     "@sap/cds": "^8",
+    "@sap/hana-client": "^2.23.24",
+    "@sap/xssec": "^4",
     "express": "^4"
   },
   "scripts": {
@@ -15,6 +17,9 @@
   "cds": {
     "sql": {
       "native_hana_associations": false
+    },
+    "requires": {
+      "auth": "xsuaa"
     }
   }
 }
