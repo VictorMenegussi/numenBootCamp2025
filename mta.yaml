@@ -1,9 +1,10 @@
 _schema-version: 3.3.0
 ID: bootcampcapnumen2025
-version: 1.0.0
+version: 1.1.0
 description: "A simple CAP project."
 parameters:
   enable-parallel-deployments: true
+  deploy_mode: html5-repo
 build-parameters:
   before-all:
     - builder: custom
@@ -18,15 +19,18 @@ modules:
       buildpack: nodejs_buildpack
       readiness-health-check-type: http
       readiness-health-check-http-endpoint: /health
+      routes:
+        - route: ${org}-${space}-bootcamp-cap.${default-domain}
     build-parameters:
       builder: npm
     provides:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
-          srv-url: ${default-url}
+          srv-url: ${routes/0/route}
     requires:
       - name: bootcampcapnumen2025-db
       - name: bootcampcapnumen2025-auth
+      - name: bootcampcapnumen2025-destination
 
   - name: bootcampcapnumen2025-db-deployer
     type: hdb
@@ -36,12 +40,98 @@ modules:
     requires:
       - name: bootcampcapnumen2025-db
 
+  - name: bootcampcapnumen2025-app-deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: bootcampcapnumen2025-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - name: bootcampcapnumen2025bootcampcap
+          artifacts:
+            - bootcamp-cap.zip
+          target-path: resources/
+
+
+  - name: bootcampcapnumen2025-app-content
+    type: com.sap.application.content
+    build-parameters:
+      no-source: true
+    requires:
+      - name: bootcampcapnumen2025-html5-repo-host
+        parameters:
+          service-key:
+            name: bootcampcapnumen2025-html5-repo-host-key
+      - name: bootcampcapnumen2025-auth
+        parameters:
+          service-key:
+            name: bootcampcapnumen2025-auth-key
+      - name: bootcampcapnumen2025-destination
+        parameters:
+          content-target: true
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: bootcampcapnumen2025-html5-repo-host
+              ServiceInstanceName: bootcampcapnumen2025-html5-srv
+              ServiceKeyName: bootcampcapnumen2025-html5-repo-host-key
+              sap.cloud.service: bootcamp.cap
+            - Name: bootcampcapnumen2025-auth
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: bootcampcapnumen2025-auth
+              ServiceKeyName: bootcampcapnumen2025-repo-auth-key
+              sap.cloud.service: bootcamp.cap
+
+  - name: bootcampcapnumen2025bootcampcap
+    type: html5
+    path: app/bootcamp-cap
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+
 resources:
+  - name: bootcampcapnumen2025-destination
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv-api
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+              - Authentication: NoAuthentication
+                Name: bootcamp-cap
+                ProxyType: Internet
+                HTML5.ForwardAuthToken: true
+                HTML5.DynamicDestination: true
+                Type: HTTP
+                URL: https://~{srv-api/srv-url}
+            existing_destinations_policy: update
+      service: destination
+      service-plan: lite
+
   - name: bootcampcapnumen2025-db
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
+
   - name: bootcampcapnumen2025-auth
     type: org.cloudfoundry.managed-service
     parameters:
@@ -51,3 +141,10 @@ resources:
       config:
         xsappname: bootcampcapnumen2025-${org}-${space}
         tenant-mode: dedicated
+
+  - name: bootcampcapnumen2025-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-name: bootcampcapnumen2025-html5-srv
+      service-plan: app-host
