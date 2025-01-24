@@ -54,6 +54,10 @@ modules:
           artifacts:
             - bootcamp-cap.zip
           target-path: resources/
+        - name: bootcampcapnumen2025bootparams
+          artifacts:
+            - boot-params.zip
+          target-path: resources/
 
 
   - name: bootcampcapnumen2025-app-content
@@ -90,6 +94,18 @@ modules:
   - name: bootcampcapnumen2025bootcampcap
     type: html5
     path: app/bootcamp-cap
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+        
+  - name: bootcampcapnumen2025bootparams
+    type: html5
+    path: app/boot-params
     build-parameters:
       build-result: dist
       builder: custom

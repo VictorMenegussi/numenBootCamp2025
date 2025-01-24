@@ -14,7 +14,8 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-bootcamp-cap": "cds watch --open bootcamp-cap/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-bootcamp-cap": "cds watch --open bootcamp-cap/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-boot-params": "cds watch --open boot-params/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "sql": {
@@ -25,6 +26,7 @@
     }
   },
   "sapux": [
-    "app/bootcamp-cap"
+    "app/bootcamp-cap",
+    "app/boot-params"
   ]
 }

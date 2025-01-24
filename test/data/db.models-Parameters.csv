@@ -1,0 +1,6 @@
+empresa,processo_id,periodicidade,acao,tipoDocumento,descricaoCabecalhoLanc,moedaDocumento,chaveLancamentoDebito,contaContabilDebito,chaveLancamentoCredito,contaContabilCredito,bloqueioPgto,diaLancamento,centroCusto
+1000,1,1,1,AB,Purchase Order,USD,40,400000,50,500000,1,15,COSTCENTER1
+2000,2,2,2,CD,Invoice Payment,EUR,31,300100,40,400200,0,10,COSTCENTER2
+3000,1,1,2,EF,Payroll Transfer,BRL,50,500300,60,600400,1,20,COSTCENTER3
+4000,2,2,1,GH,Asset Depreciation,USD,20,200400,30,300500,0,05,COSTCENTER4
+5000,1,1,1,IJ,Travel Reimbursement,GBP,10,100500,20,200600,1,28,COSTCENTER5
